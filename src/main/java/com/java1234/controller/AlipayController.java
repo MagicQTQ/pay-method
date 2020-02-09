@@ -13,8 +13,11 @@ import com.java1234.service.OrderService;
 import com.java1234.util.DateUtil;
 import com.java1234.util.DeviceUtil;
 import com.java1234.util.StringUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -29,10 +32,9 @@ import java.util.Map;
 
 /**
  * 支付宝支付Controller
- *
- * @author Administrator
  */
 @Controller
+@Api(description = "支付宝支付Controller")
 @RequestMapping("/alipay")
 public class AlipayController {
 
@@ -47,12 +49,9 @@ public class AlipayController {
     /**
      * 支付请求
      *
-     * @param order
-     * @param request
-     * @param response
-     * @throws Exception
      */
-    @RequestMapping("/pay")
+    @GetMapping("/pay")
+    @ApiOperation("支付宝支付请求")
     public void pay(Order order, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String orderNo = DateUtil.getCurrentDateStr(); // 生成订单号
@@ -123,21 +122,14 @@ public class AlipayController {
 
             form = client.pageExecute(alipayRequest).getBody(); // 生成表单
         }
-
-
         response.setContentType("text/html;charset=" + alipayProperties.getCharset());
         response.getWriter().write(form); // 直接将完整的表单html输出到页面
         response.getWriter().flush();
         response.getWriter().close();
     }
 
-    /**
-     * 支付宝服务器异步通知
-     *
-     * @param request
-     * @throws Exception
-     */
-    @RequestMapping("/notifyUrl")
+    @GetMapping("/notifyUrl")
+    @ApiOperation("支付宝服务器异步通知")
     public void notifyUrl(HttpServletRequest request) throws Exception {
         logger.info("异步通知notifyUrl");
         //获取支付宝GET过来反馈信息
@@ -183,14 +175,12 @@ public class AlipayController {
 
     /**
      * 同步跳转
-     *
-     * @param request
-     * @throws Exception
      */
-    @RequestMapping("/returnUrl")
+    @GetMapping("/returnUrl")
+    @ApiOperation("支付宝同步通知跳转")
     public ModelAndView returnUrl(HttpServletRequest request) throws Exception {
         ModelAndView mav = new ModelAndView();
-        mav.addObject("title", "同步通知地址_Java知识分享网");
+        mav.addObject("title", "同步通知地址_支付宝");
 
         //获取支付宝GET过来反馈信息
         Map<String, String> params = new HashMap<String, String>();
@@ -211,7 +201,7 @@ public class AlipayController {
 
         //——请在这里编写您的程序（以下代码仅作参考）——
         if (signVerified) {
-            mav.addObject("message", "非常感谢，祝您生活愉快！");
+            mav.addObject("message", "非常感谢，验签成功！");
         } else {
             mav.addObject("message", "验签失败");
         }

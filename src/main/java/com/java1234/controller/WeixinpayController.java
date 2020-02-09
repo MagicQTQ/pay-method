@@ -9,11 +9,15 @@ import com.java1234.entity.Order;
 import com.java1234.properties.WeixinpayProperties;
 import com.java1234.service.OrderService;
 import com.java1234.util.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -32,11 +36,7 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.*;
 
-/**
- * 微信支付Controller
- *
- * @author Administrator
- */
+@Api(description = "微信支付Controller")
 @Controller
 @RequestMapping("/weixinpay")
 public class WeixinpayController {
@@ -49,10 +49,9 @@ public class WeixinpayController {
 
     private static Logger logger = Logger.getLogger(WeixinpayController.class);
 
-    /**
-     * 微信请求
-     */
-    @RequestMapping("/pay")
+
+    @GetMapping("/pay")
+    @ApiOperation("微信支付发起请求")
     public ModelAndView pay(Order order, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String totalAmount = ""; // 支付总金额
@@ -130,13 +129,8 @@ public class WeixinpayController {
 
     }
 
-    /**
-     * 微信支付服务器异步通知
-     *
-     * @param request
-     * @throws Exception
-     */
-    @RequestMapping("/notifyUrl")
+    @GetMapping("/notifyUrl")
+    @ApiOperation("微信支付服务器异步通知【微信那边回调】")
     public void notifyUrl(HttpServletRequest request) throws Exception {
         logger.info("notifyUrl");
         //读取参数
@@ -173,7 +167,8 @@ public class WeixinpayController {
         String key = weixinpayProperties.getKey();
 
         if (isTenpaySign("UTF-8", packageParams, key)) { // 验证通过
-            if ("SUCCESS".equals((String) packageParams.get("result_code"))) {
+            String result_code = (String) packageParams.get("result_code");
+            if ("SUCCESS".equals(result_code)) {
                 String out_trade_no = (String) packageParams.get("out_trade_no");
                 Order order = orderService.getByOrderNo(out_trade_no);
                 if (order != null) {
@@ -187,10 +182,9 @@ public class WeixinpayController {
         }
     }
 
-    /**
-     * 加载支付二维码
-     */
-    @RequestMapping("/loadPayImage")
+
+    @GetMapping("/loadPayImage")
+    @ApiOperation("加载支付二维码")
     public void loadPayImage(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String id = request.getParameter("id");
         Order order = orderService.getById(Integer.parseInt(id));
@@ -236,27 +230,19 @@ public class WeixinpayController {
         }
     }
 
-    /**
-     * 查询订单支付状态
-     *
-     * @param id
-     * @return
-     * @throws Exception
-     */
     @ResponseBody
-    @RequestMapping("/loadPayState")
+    @PostMapping("/loadPayState")
+    @ApiOperation("查询订单支付状态。是否已支付。 0未支付，1已支付")
     public Integer loadPayState(Integer id) throws Exception {
         Order order = orderService.getById(id);
         return order.getIsPay();
     }
 
     /**
-     * 微信支付同步通知页面
-     *
-     * @return
-     * @throws Exception
+     * 如果getIsPay()==1的话，回调这个接口。微信支付同步通知页面
      */
-    @RequestMapping("/returnUrl")
+    @GetMapping("/returnUrl")
+    @ApiOperation("微信支付同步通知页面")
     public ModelAndView returnUrl() throws Exception {
         ModelAndView mav = new ModelAndView();
         mav.addObject("title", "同步通知地址_Java知识分享网");
@@ -298,8 +284,6 @@ public class WeixinpayController {
 
     /**
      * 获取本机IP地址
-     *
-     * @return IP
      */
     public static String getRemortIP(HttpServletRequest request) {
         if (request.getHeader("x-forwarded-for") == null) {
@@ -355,11 +339,8 @@ public class WeixinpayController {
         }
     }
 
-
     /**
      * 是否签名正确,规则是:按参数名称a-z排序,遇到空值的参数不参加签名。
-     *
-     * @return boolean
      */
     public static boolean isTenpaySign(String characterEncoding, SortedMap<Object, Object> packageParams, String API_KEY) {
         StringBuffer sb = new StringBuffer();

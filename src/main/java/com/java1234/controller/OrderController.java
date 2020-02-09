@@ -33,7 +33,7 @@ public class OrderController {
     @RequestMapping("/toOrderListPage")
     public ModelAndView toOrderListPage() {
         ModelAndView mav = new ModelAndView();
-        mav.addObject("title", "订单列表_支付宝微信支付测试");
+        mav.addObject("title", "订单列表_Java知识分享网");
         mav.setViewName("orderList");
         return mav;
     }

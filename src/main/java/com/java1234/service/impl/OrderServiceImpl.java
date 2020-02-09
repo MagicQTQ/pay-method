@@ -19,56 +19,56 @@ import java.util.List;
 
 /**
  * 订单Service实现类
- * @author Administrator
  *
+ * @author Administrator
  */
 @Service("orderService")
 public class OrderServiceImpl implements OrderService {
 
-	@Resource
-	private OrderRepository orderRepository;
-	
-	@Override
-	public void save(Order order) {
-		orderRepository.save(order);
-	}
+    @Resource
+    private OrderRepository orderRepository;
 
-	@Override
-	public Order getByOrderNo(String orderNo) {
-		return orderRepository.getByOrderNo(orderNo);
-	}
+    @Override
+    public void save(Order order) {
+        orderRepository.save(order);
+    }
 
-	@Override
-	public Order getById(Integer id) {
-		return orderRepository.getOne(id);
-	}
+    @Override
+    public Order getByOrderNo(String orderNo) {
+        return orderRepository.getByOrderNo(orderNo);
+    }
 
-	@Override
-	public List<Order> list(Order order, Integer page, Integer pageSize) {
-		Pageable pageable=new PageRequest(page-1,pageSize,Sort.Direction.DESC,"buyTime");
-		Page<Order> pageOrder = orderRepository.findAll(new Specification<Order>() {
-			
-			@Override
-			public Predicate toPredicate(Root<Order> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Predicate predicate=cb.conjunction();
-				predicate.getExpressions().add(cb.equal(root.get("isPay"), 1));
-				return predicate;
-			}
-		}, pageable);
-		return pageOrder.getContent();
-	}
+    @Override
+    public Order getById(Integer id) {
+        return orderRepository.getOne(id);
+    }
 
-	@Override
-	public Long getCount(Order order) {
-		return orderRepository.count(new Specification<Order>() {
+    @Override
+    public List<Order> list(Order order, Integer page, Integer pageSize) {
+        Pageable pageable = new PageRequest(page - 1, pageSize, Sort.Direction.DESC, "buyTime");
+        Page<Order> pageOrder = orderRepository.findAll(new Specification<Order>() {
 
-			@Override
-			public Predicate toPredicate(Root<Order> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				Predicate predicate=cb.conjunction();
-				predicate.getExpressions().add(cb.equal(root.get("isPay"), 1));
-				return predicate;
-			}
-		});
-	}
+            @Override
+            public Predicate toPredicate(Root<Order> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Predicate predicate = cb.conjunction();
+                predicate.getExpressions().add(cb.equal(root.get("isPay"), 1));
+                return predicate;
+            }
+        }, pageable);
+        return pageOrder.getContent();
+    }
+
+    @Override
+    public Long getCount(Order order) {
+        return orderRepository.count(new Specification<Order>() {
+
+            @Override
+            public Predicate toPredicate(Root<Order> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Predicate predicate = cb.conjunction();
+                predicate.getExpressions().add(cb.equal(root.get("isPay"), 1));
+                return predicate;
+            }
+        });
+    }
 
 }

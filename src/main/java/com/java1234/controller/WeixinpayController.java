@@ -1,5 +1,6 @@
 package com.java1234.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -8,7 +9,6 @@ import com.java1234.entity.Order;
 import com.java1234.properties.WeixinpayProperties;
 import com.java1234.service.OrderService;
 import com.java1234.util.*;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -27,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.*;
@@ -50,29 +51,23 @@ public class WeixinpayController {
 
     /**
      * 微信请求
-     *
-     * @param order
-     * @param request
-     * @param response
-     * @throws Exception
      */
     @RequestMapping("/pay")
     public ModelAndView pay(Order order, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
 
         String totalAmount = ""; // 支付总金额
         String subject = ""; // 订单名称
         String body = ""; // 商品描述
         switch (order.getProductId()) {
             case 1:
-                totalAmount = "1";
+                totalAmount = "1";  //微信 是以分为单位
                 subject = "请锋哥喝杯奶茶";
-                body = "09元-请锋哥喝杯奶茶";
+                body = "0.01元-请锋哥喝杯奶茶";
                 break;
             case 2:
-                totalAmount = "29";
+                totalAmount = "1";
                 subject = "请锋哥吃肯德基";
-                body = "29元-请锋哥吃肯德基";
+                body = "0.01元-请锋哥吃肯德基";
                 break;
             case 3:
                 totalAmount = "49";
@@ -87,9 +82,8 @@ public class WeixinpayController {
         }
 
         order.setSubject(subject);
-        order.setTotalAmount(totalAmount);
         order.setBody(body);
-
+        order.setTotalAmount(totalAmount);
         orderService.save(order);
 
         String userAgent = request.getHeader("user-agent");
@@ -104,17 +98,20 @@ public class WeixinpayController {
             map.put("trade_type", "MWEB"); // 交易类型
             map.put("out_trade_no", orderNo);
             map.put("body", order.getBody());
-            map.put("total_fee", Integer.parseInt(order.getTotalAmount()) ); //以分为单位的  * 100
+//            map.put("total_fee", Integer.parseInt(order.getTotalAmount()) * 100);
+            map.put("total_fee", Integer.parseInt(order.getTotalAmount())); //以分为单位的  * 100
             map.put("nonce_str", StringUtil.getRandomString(30)); // 随机串
             map.put("spbill_create_ip", getRemortIP(request)); // 终端IP
             map.put("sign", getSign(map)); // 签名
             String xml = XmlUtil.genXml(map);
             System.out.println(xml);
+
+
             InputStream in = HttpClientUtil.sendXMLDataByPost(weixinpayProperties.getUrl().toString(), xml).getEntity().getContent(); // 发送xml消息
             String mweb_url = getElementValue(in, "mweb_url");
             logger.info("mweb_url:" + mweb_url);
             // 拼接跳转地址
-            mweb_url += "&redirect_url=" + URLEncoder.encode(weixinpayProperties.getReturn_url(), "GBK");
+            mweb_url += "&redirect_url=" + URLEncoder.encode(weixinpayProperties.getReturn_url(), "UTF-8");
             logger.info("编码：mweb_url:" + mweb_url);
             order.setOrderNo(orderNo); // 设置订单号
             orderService.save(order); // 保存订单信息
@@ -122,8 +119,10 @@ public class WeixinpayController {
             return null;
         } else {
             ModelAndView mav = new ModelAndView();
+            String toAmount = String.valueOf(new BigDecimal(Double.parseDouble("1") / 100).setScale(2, BigDecimal.ROUND_HALF_UP));
+            order.setTotalAmount(toAmount); //返回前端显示0.01元
             mav.addObject("order", order);
-            mav.addObject("title", "微信扫码在线支付_Java知识分享网");
+            mav.addObject("title", "微信扫码在线支付_Java测试");
             mav.setViewName("weixinpay");
             return mav;
         }
@@ -153,11 +152,10 @@ public class WeixinpayController {
         inputStream.close();
 
         //解析xml成map    
-        Map<String, String> m = new HashMap<>();
-        m = XmlUtil.doXMLParse(sb.toString());
+        Map<String, String> m = XmlUtil.doXMLParse(sb.toString());
 
         //过滤空 设置 TreeMap    
-        SortedMap<Object, Object> packageParams = new TreeMap<Object, Object>();
+        SortedMap<Object, Object> packageParams = new TreeMap<>();
         Iterator<String> it = m.keySet().iterator();
         while (it.hasNext()) {
             String parameter = it.next();
@@ -191,15 +189,13 @@ public class WeixinpayController {
 
     /**
      * 加载支付二维码
-     *
-     * @param request
-     * @param response
-     * @throws Exception
      */
     @RequestMapping("/loadPayImage")
     public void loadPayImage(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String id = request.getParameter("id");
         Order order = orderService.getById(Integer.parseInt(id));
+        System.out.println(JSONObject.toJSONString(order));
+
         String orderNo = DateUtil.getCurrentDateStr(); // 生成订单号
         Map<String, Object> map = new HashMap<>();
         map.put("appid", weixinpayProperties.getAppid());
@@ -209,7 +205,7 @@ public class WeixinpayController {
         map.put("trade_type", "NATIVE"); // 交易类型
         map.put("out_trade_no", orderNo);
         map.put("body", order.getBody());
-        map.put("total_fee", Integer.parseInt(order.getTotalAmount()) );  //扫描二维码显示出的金额 以分为单位
+        map.put("total_fee", Integer.parseInt(order.getTotalAmount()));
         map.put("nonce_str", StringUtil.getRandomString(30)); // 随机串
         // map.put("spbill_create_ip", getRemortIP(request)); // 终端IP
         map.put("spbill_create_ip", "127.0.0.1"); // 终端IP
@@ -219,11 +215,12 @@ public class WeixinpayController {
 
         InputStream in = HttpClientUtil.sendXMLDataByPost(weixinpayProperties.getUrl().toString(), xml).getEntity().getContent(); // 发送xml消息
         String code_url = getElementValue(in, "code_url");
+        System.out.print("code_url:{}" + code_url);
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         Map hints = new HashMap();
         BitMatrix bitMatrix = null;
         try {
-            bitMatrix = multiFormatWriter.encode(code_url, BarcodeFormat.QR_CODE, 250, 250, hints);
+            bitMatrix = multiFormatWriter.encode(code_url, BarcodeFormat.QR_CODE, 250, 250, hints); //把链接弄成二维码
             BufferedImage image = toBufferedImage(bitMatrix);
             //输出二维码图片流
             try {
@@ -263,7 +260,7 @@ public class WeixinpayController {
     public ModelAndView returnUrl() throws Exception {
         ModelAndView mav = new ModelAndView();
         mav.addObject("title", "同步通知地址_Java知识分享网");
-        mav.addObject("message", "非常感谢，祝您生活愉快");
+        mav.addObject("message", "thank you，订单已支付");
         mav.setViewName("returnUrl");
         return mav;
     }
@@ -301,6 +298,7 @@ public class WeixinpayController {
 
     /**
      * 获取本机IP地址
+     *
      * @return IP
      */
     public static String getRemortIP(HttpServletRequest request) {
@@ -324,7 +322,7 @@ public class WeixinpayController {
             sb.append(keyArr[i] + "=" + map.get(keyArr[i]) + "&");
         }
         sb.append("key=" + weixinpayProperties.getKey());
-        String sign = DigestUtils.md5Hex(sb.toString());
+        String sign = string2MD5(sb.toString());
         return sign;
     }
 

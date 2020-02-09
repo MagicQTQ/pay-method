@@ -16,7 +16,7 @@
 <body>
 <div class="layui-container">
 	
-	<#include "/common/head.ftl">
+	<#include "common/head.ftl">
 	
 	<div class="layui-row">
 	    <div class="layui-col-md12">

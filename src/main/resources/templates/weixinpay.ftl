@@ -16,7 +16,7 @@
 <body>
 <div class="layui-container">
 	
-	<#include "/common/head.ftl">
+	<#include "common/head.ftl">
 	
 	<div class="layui-row">
 	    <div class="layui-col-md12">
@@ -43,7 +43,7 @@
 					</td>
 				</tr>
 			</table>
-	        <img src="/weixinpay/loadPayImage?id=${order.id?c}"></img>
+	       <img src="/weixinpay/loadPayImage?id=${order.id?c}" />  <#--调用了-->
 	    </div>
 	</div>
 	

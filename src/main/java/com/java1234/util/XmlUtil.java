@@ -1,10 +1,5 @@
 package com.java1234.util;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +7,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+
+
 
 
 /**
@@ -66,7 +68,7 @@ public class XmlUtil {
             if(children.isEmpty()) {    
                 v = e.getTextNormalize();    
             } else {    
-                v = XmlUtil.getChildrenText(children);
+                v = XmlUtil.getChildrenText(children);    
             }    
                 
             m.put(k, v);    
@@ -94,7 +96,7 @@ public class XmlUtil {
                 List list = e.getChildren();    
                 sb.append("<" + name + ">");    
                 if(!list.isEmpty()) {    
-                    sb.append(XmlUtil.getChildrenText(list));
+                    sb.append(XmlUtil.getChildrenText(list));    
                 }    
                 sb.append(value);    
                 sb.append("</" + name + ">");    

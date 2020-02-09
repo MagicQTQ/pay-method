@@ -35,10 +35,10 @@
     		<div class="layui-form-item">
 			    <label class="layui-form-label">支付金额:</label>
 			    <div class="layui-input-block">
-			      <input type="radio" name="productId" value="1" title="0.01元-请锋哥喝杯奶茶">
+			      <input type="radio" name="productId" value="1" title="0.01元-请锋哥喝杯奶茶" checked="">
 			    </div>
 			    <div class="layui-input-block">
-			      <input type="radio" name="productId" value="2" title="29元-请锋哥吃肯德基" checked="">
+			      <input type="radio" name="productId" value="2" title="29元-请锋哥吃肯德基" >
 			    </div>
 			    <div class="layui-input-block">
 			      <input type="radio" name="productId" value="3" title="49元-请锋哥吃顿饭">
@@ -89,27 +89,27 @@
 <script src="/layui/layui.js"></script> 
 
 <script>
-	//注意：导航 依赖 element 模块，否则无法进行功能性操作
-	layui.use('element', function(){
-	  var element = layui.element;
-	});
+//注意：导航 依赖 element 模块，否则无法进行功能性操作
+layui.use('element', function(){
+  var element = layui.element;
+});
 </script>
 
-	<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
-	<script>
-	layui.use(['form'], function(){
-	  var form = layui.form;
-
-	  //监听提交
-	  form.on('submit(paySubmit)', function(data){
-		if(data.field.way=='支付宝'){
-			data.form.action="/alipay/pay";
-		}else if(data.field.way=='微信'){
-			data.form.action="/weixinpay/pay";
-		}
-		return true;
-	  });
-	});
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+layui.use(['form'], function(){
+  var form = layui.form;
+ 
+  //监听提交
+  form.on('submit(paySubmit)', function(data){
+    if(data.field.way=='支付宝'){
+    	data.form.action="/alipay/pay";
+    }else if(data.field.way=='微信'){
+    	data.form.action="/weixinpay/pay";
+    }
+    return true;
+  });
+});
 </script>
 
 </body>

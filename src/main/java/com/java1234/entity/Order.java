@@ -8,148 +8,147 @@ import java.util.Date;
 
 /**
  * 订单表
- * @author Administrator
  *
+ * @author Administrator
  */
 @Entity
-@Table(name="t_order")
+@Table(name = "t_order")
 public class Order {
 
-	@Id
-	@GeneratedValue
-	private Integer id; // 编号
-	
-	@Column(length=200)
-	private String orderNo; // 订单号
-	
-	private Integer productId; // 商品ID
-	
-	@Column(length=200)
-	private String subject; // 订单名称
-	
-	@Column(length=800)
-	private String body; // 商品描述
-	
-	@Column(length=50)
-	private String totalAmount; // 总金额
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date buyTime; // 购买日期时间
-	
-	@Column(length=50)
-	private String nickName; // 支付人
-	
-	@Column(length=20)
-	private String qq; // 购买人QQ
-	
-	@Column(length=1000)
-	private String message; // 购买人留言
-	
-	@Column(length=10)
-	private String way; // 支付方式
-	
-	private int isPay; // 是否支付 0 未支付 1 支付
+    @Id
+    @GeneratedValue
+    private Integer id; // 编号
 
-	public Integer getId() {
-		return id;
-	}
+    @Column(length = 200)
+    private String orderNo; // 订单号
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    private Integer productId; // 商品ID
 
-	public String getOrderNo() {
-		return orderNo;
-	}
+    @Column(length = 200)
+    private String subject; // 订单名称
 
-	public void setOrderNo(String orderNo) {
-		this.orderNo = orderNo;
-	}
-	
-	
-	public Integer getProductId() {
-		return productId;
-	}
+    @Column(length = 800)
+    private String body; // 商品描述
 
-	public void setProductId(Integer productId) {
-		this.productId = productId;
-	}
+    @Column(length = 50)
+    private String totalAmount; // 总金额
 
-	
-	public String getSubject() {
-		return subject;
-	}
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date buyTime; // 购买日期时间
 
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
+    @Column(length = 50)
+    private String nickName; // 支付人
 
-	public String getBody() {
-		return body;
-	}
+    @Column(length = 20)
+    private String qq; // 购买人QQ
 
-	public void setBody(String body) {
-		this.body = body;
-	}
+    @Column(length = 1000)
+    private String message; // 购买人留言
 
-	public String getTotalAmount() {
-		return totalAmount;
-	}
+    @Column(length = 10)
+    private String way; // 支付方式
 
-	public void setTotalAmount(String totalAmount) {
-		this.totalAmount = totalAmount;
-	}
+    private int isPay; // 是否支付 0 未支付 1 支付
 
-	@JsonSerialize(using=CustomDateTimeSerializer.class)
-	public Date getBuyTime() {
-		return buyTime;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setBuyTime(Date buyTime) {
-		this.buyTime = buyTime;
-	}
-	
-	
-	public String getNickName() {
-		return nickName;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
-	}
+    public String getOrderNo() {
+        return orderNo;
+    }
 
-	public String getQq() {
-		return qq;
-	}
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
 
-	public void setQq(String qq) {
-		this.qq = qq;
-	}
 
-	public String getMessage() {
-		return message;
-	}
+    public Integer getProductId() {
+        return productId;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
 
-	public String getWay() {
-		return way;
-	}
 
-	public void setWay(String way) {
-		this.way = way;
-	}
+    public String getSubject() {
+        return subject;
+    }
 
-	public int getIsPay() {
-		return isPay;
-	}
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
 
-	public void setIsPay(int isPay) {
-		this.isPay = isPay;
-	}
-	
-	
-	
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public String getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(String totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    @JsonSerialize(using = CustomDateTimeSerializer.class)
+    public Date getBuyTime() {
+        return buyTime;
+    }
+
+    public void setBuyTime(Date buyTime) {
+        this.buyTime = buyTime;
+    }
+
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getQq() {
+        return qq;
+    }
+
+    public void setQq(String qq) {
+        this.qq = qq;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getWay() {
+        return way;
+    }
+
+    public void setWay(String way) {
+        this.way = way;
+    }
+
+    public int getIsPay() {
+        return isPay;
+    }
+
+    public void setIsPay(int isPay) {
+        this.isPay = isPay;
+    }
+
+
 }
